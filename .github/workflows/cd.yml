@@ -1,4 +1,4 @@
-name: CI/CD
+name: CICD
 
 on:
   push:
@@ -15,14 +15,14 @@ jobs:
         run: |
           pip install -r requirements.txt
           pytest test/
-      - env:
-        TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
-        TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-        TEST_USER_SUB: ${{ secrets.TEST_USER_SUB }}
-        AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-        AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-        ATLAS_URI: ${{ secrets.ATLAS_URI }}
-        ATLAS_DB_NAME: ${{ secrets.ATLAS_DB_NAME }}
+        env:
+          TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          TEST_USER_SUB: ${{ secrets.TEST_USER_SUB }}
+          AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+          ATLAS_URI: ${{ secrets.ATLAS_URI }}
+          ATLAS_DB_NAME: ${{ secrets.ATLAS_DB_NAME }}
 
   # build-and-deploy:
   #   needs: test
