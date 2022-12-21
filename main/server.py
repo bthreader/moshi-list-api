@@ -21,7 +21,7 @@ from main.routers import tasks, lists
 
 app = FastAPI()
 
-# Allow the front-end dev server
+# Allow the front-end dev server and the production server
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "https://bthreader.github.io"],
@@ -33,12 +33,14 @@ app.add_middleware(
 
 @app.on_event("startup")
 def startup_db_client():
+    """Creates a database connection"""
     app.mongodb_client = MongoClient(host=config["ATLAS_URI"])
     app.database = app.mongodb_client[config["DB_NAME"]]
 
 
 @app.on_event("shutdown")
 def shutdown_db_client():
+    """Closes the database connection"""
     app.mongodb_client.close()
 
 

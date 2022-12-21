@@ -4,9 +4,10 @@
 # Imports
 # ----------------------------------------------------------------------------
 
+from typing import Optional
 from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
-from typing import Optional
+
 
 # ----------------------------------------------------------------------------
 # User
@@ -24,15 +25,18 @@ class User(BaseModel):
 
 class Task(BaseModel):
     task: str
-    # Secondary key
-    list_id: UUID
+    list_id: UUID  # Secondary key
     notes: Optional[str]
     complete: bool = False
+    pinned: bool = False
 
     class Config:
         schema_extra = {
             "example": {
                 "task": "Water the plants",
+                "list_id": "4c2bb70c-31df-4193-9dc5-6405c5dc21c8",
+                "complete": True,
+                "pinned": False,
             }
         }
 
@@ -45,28 +49,19 @@ class TaskInDB(Task):
     # -> use alias
     id: UUID = Field(default_factory=uuid4, alias="_id")
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "_id": "14eae223-3628-45a4-acbf-ca71707c9cd0",
-                "username": "johnsmith",
-                "task": "Water the plants",
-                "complete": False,
-            }
-        }
-
 
 class TaskUpdate(BaseModel):
     task: Optional[str]
     list_id: Optional[UUID]
     notes: Optional[str]
     complete: Optional[bool]
+    pinned: Optional[bool]
 
     class Config:
         schema_extra = {
             "example": {
                 "task": "My task without the previous typo...",
-                "notes": "And don't forget to add XYZ",
+                "notes": "And don't forget to add some notes",
                 "complete": True,
             }
         }

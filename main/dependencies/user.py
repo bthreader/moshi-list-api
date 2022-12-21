@@ -38,7 +38,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 
     Args:
         security_scopes (SecurityScopes): The scopes the token must contain
-        token (str, optional): JWT token
+        token (str, optional): JWT
 
     Returns:
         User: Identifies the token sender to the backend
@@ -56,10 +56,18 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 
 
 def validate_key(token: str) -> Dict[str, str]:
+    """Cross references MSFT JWKS with the key provided in the JWT header
+
+    Args:
+        token (str): JWT
+
+    Returns:
+        Dict[str, str]: full details of (verified) RSA key provided in header
+    """
     try:
         unverified_header = jwt.get_unverified_header(token)
-    except jwt.JWTError:
-        raise HTTPException(401, "Unable to decode token header")
+    except jwt.JWTError as exc:
+        raise HTTPException(401, "Unable to decode token header") from exc
 
     # Get the JSON Web Key Set from MSFT for the tenant
     jsonurl = urlopen(
@@ -101,13 +109,13 @@ def validate_payload(token: str, key: Key):
             token=token, key=key, algorithms=["RS256"], audience=config["CLIENT_ID"]
         )
 
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(401, "Token is expired")
+    except jwt.ExpiredSignatureError as exc:
+        raise HTTPException(401, "Token is expired") from exc
 
-    except jwt.JWTClaimsError:
-        raise HTTPException(401, "Incorrect claims")
+    except jwt.JWTClaimsError as exc:
+        raise HTTPException(401, "Incorrect claims") from exc
 
-    except Exception:
-        raise HTTPException(401, "Unable to parse token")
+    except Exception as exc:
+        raise HTTPException(401, "Unable to parse token") from exc
 
     return payload

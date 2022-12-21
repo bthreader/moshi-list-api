@@ -31,7 +31,7 @@ def validate_document_owner(
         mongo_result (Dict): the result from the DB when using the users request
 
     Returns:
-        HTTPException | None: An expection to raise in the route if required
+        HTTPException | None: An exception to raise in the route if required
     """
     invalid_id = HTTPException(
         status_code=400,
@@ -43,3 +43,22 @@ def validate_document_owner(
 
     if mongo_result["username"] != user.username:
         return invalid_id
+
+    return None
+
+
+def repeated_entry(old_document: Dict, key: str, new_value) -> bool:
+    """Checks the update is actually an update
+
+    Args:
+        old_task (Dict): database entry
+        key (str): the attribute
+        new_value: the proposed update in the request
+
+    Returns:
+        bool: whether it's a repeated entry
+    """
+    try:
+        return old_document[key] == new_value
+    except KeyError:
+        return False

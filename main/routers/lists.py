@@ -9,11 +9,11 @@ from typing import List, Dict
 from uuid import UUID
 
 # Fast
-from fastapi import APIRouter, Depends, Request, Form
+from fastapi import APIRouter, Depends, Request
 from fastapi.encoders import jsonable_encoder
 
 # Module
-from main.dependencies.models import TaskInDB, User, TaskList, TaskListInDB
+from main.dependencies.models import User, TaskList, TaskListInDB
 from main.dependencies.user import get_current_user
 from main.dependencies.utils import validate_document_owner
 
@@ -37,7 +37,17 @@ async def create_task_list(
     task_list: TaskList,
     request: Request,
     current_user: User = Depends(get_current_user),
-):
+) -> TaskListInDB:
+    """Creates a task list
+
+    Args:
+        task_list (TaskList): task list in the request
+        request (Request): request object to get the database client
+        current_user (User, optional): the signed in user
+
+    Returns:
+        TaskListInDB: the newly created database entry
+    """
     new_task_list = task_list.dict()
     new_task_list["username"] = current_user.username
     new_task_list = TaskListInDB(**new_task_list)
@@ -59,7 +69,14 @@ async def delete_task_list(
     _id: UUID,
     request: Request,
     current_user: User = Depends(get_current_user),
-):
+) -> None:
+    """Deletes a task list
+
+    Args:
+        _id (UUID): PK of the task list to delete
+        request (Request): request object to get the database client
+        current_user (User, optional): the signed in user
+    """
     task_mongo: Dict = request.app.database["lists"].find_one(filter={"_id": str(_id)})
 
     result = validate_document_owner(user=current_user, mongo_result=task_mongo)
@@ -80,7 +97,16 @@ async def delete_task_list(
 )
 async def get_task_lists(
     request: Request, current_user: User = Depends(get_current_user)
-):
+) -> List[TaskListInDB]:
+    """Returns all task lists of a user
+
+    Args:
+        request (Request): request object to get the database client
+        current_user (User, optional): the signed in user
+
+    Returns:
+        List[TaskListInDB]: the users task lists
+    """
     task_lists_mongo: List[Dict] = list(
         request.app.database["lists"].find(filter={"username": current_user.username})
     )

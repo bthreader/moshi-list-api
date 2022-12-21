@@ -2,7 +2,8 @@ name: CICD
 
 on:
   push:
-    branches: [ "main" ]
+    paths:
+      - 'main/**'
 
 jobs:
   Test:
@@ -30,8 +31,9 @@ jobs:
           ATLAS_URI: ${{ secrets.ATLAS_URI }}
           ATLAS_DB_NAME: ${{ secrets.ATLAS_DB_NAME }}
 
-  # build-and-deploy:
-  #   needs: test
+  # Build-and-Deploy:
+  #   needs: Test
+  #   if: github.ref == 'refs/heads/main'
   #   runs-on: ubuntu-latest
   #   steps:
   #     - name: Log in to Azure
@@ -45,8 +47,8 @@ jobs:
   #     - name: Build image
   #     - run: |
   #         az acr build -t ${{ secrets.AZURE_IMAGE_TAG }} -r ${{ secrets.AZURE_IMAGE_REGISTRY }} .
-  #     - env:
-  #       AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-  #       AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-  #       ATLAS_URI: ${{ secrets.ATLAS_URI }}
-  #       ATLAS_DB_NAME: ${{ secrets.ATLAS_DB_NAME }}
+  #       env:
+  #         AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+  #         AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+  #         ATLAS_URI: ${{ secrets.ATLAS_URI }}
+  #         ATLAS_DB_NAME: ${{ secrets.ATLAS_DB_NAME }}
