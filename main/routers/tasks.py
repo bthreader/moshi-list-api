@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 
 # Core
-from typing import List, Dict
+from typing import List, Dict, Optional
 from uuid import UUID
 
 # Fast
@@ -37,6 +37,7 @@ async def read_tasks(
     list_id: UUID,
     complete: bool,
     request: Request,
+    pinned: Optional[bool] = None,
     current_user: User = Depends(get_current_user),
 ) -> List[TaskInDB]:
     """Returns tasks relating to a certain list (list_id) for a current user
@@ -50,14 +51,17 @@ async def read_tasks(
     Returns:
         List[TaskInDB]: the tasks for the given list
     """
+    database_filter = {
+        "username": current_user.username,
+        "list_id": str(list_id),
+        "complete": complete
+    }
+
+    if pinned is not None:
+        database_filter['pinned'] = pinned
+
     tasks = list(
-        request.app.database["tasks"].find(
-            filter={
-                "username": current_user.username,
-                "list_id": str(list_id),
-                "complete": complete,
-            }
-        )
+        request.app.database["tasks"].find(filter=database_filter)
     )
 
     return tasks

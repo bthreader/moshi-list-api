@@ -90,7 +90,7 @@ class TestTasks:
                 context["task_id"] = response_task.id
 
     @pytest.mark.asyncio
-    async def test_update_task(self, create_access_token, context):
+    async def test_update_task_complete(self, create_access_token, context):
         # Change complete to true
         updated_task = TaskUpdate(complete=True)
 
@@ -107,6 +107,44 @@ class TestTasks:
 
                 response_task = TaskInDB(**response.json())
                 assert response_task.complete
+
+    @pytest.mark.asyncio
+    async def test_update_task_pinned(self, create_access_token, context):
+        # Change complete to true
+        updated_task = TaskUpdate(pinned=True)
+
+        async with LifespanManager(app):
+            with TestClient(app) as client:
+                response = client.put(
+                    "/api/v1/tasks",
+                    params={"_id": context["task_id"]},
+                    headers={"Authorization": "Bearer " + create_access_token},
+                    json=jsonable_encoder(updated_task),
+                )
+
+                assert response.status_code == 200
+
+                response_task = TaskInDB(**response.json())
+                assert response_task.pinned
+
+    @pytest.mark.asyncio
+    async def test_update_task_pinned(self, create_access_token, context):
+        # Change complete to true
+        updated_task = TaskUpdate(notes="These notes are better :)")
+
+        async with LifespanManager(app):
+            with TestClient(app) as client:
+                response = client.put(
+                    "/api/v1/tasks",
+                    params={"_id": context["task_id"]},
+                    headers={"Authorization": "Bearer " + create_access_token},
+                    json=jsonable_encoder(updated_task),
+                )
+
+                assert response.status_code == 200
+
+                response_task = TaskInDB(**response.json())
+                assert response_task.notes == "These notes are better :)"
 
     @pytest.mark.asyncio
     async def test_delete_task(self, create_access_token, context):
