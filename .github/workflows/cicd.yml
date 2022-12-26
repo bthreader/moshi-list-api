@@ -47,7 +47,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build image
-      - run: |
+        run: |
           az acr build -t ${{ secrets.AZURE_IMAGE_TAG }} -r ${{ secrets.AZURE_IMAGE_REGISTRY }} .
         env:
           AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
