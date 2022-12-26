@@ -31,24 +31,26 @@ jobs:
           ATLAS_URI: ${{ secrets.ATLAS_URI }}
           ATLAS_DB_NAME: ${{ secrets.ATLAS_DB_NAME }}
 
-  # Build-and-Deploy:
-  #   needs: Test
-  #   if: github.ref == 'refs/heads/main'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Log in to Azure
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  Build-and-Deploy:
+    needs: Test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: Build image
-  #     - run: |
-  #         az acr build -t ${{ secrets.AZURE_IMAGE_TAG }} -r ${{ secrets.AZURE_IMAGE_REGISTRY }} .
-  #       env:
-  #         AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-  #         AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-  #         ATLAS_URI: ${{ secrets.ATLAS_URI }}
-  #         ATLAS_DB_NAME: ${{ secrets.ATLAS_DB_NAME }}
+      - name: Build image
+      - run: |
+          az acr build -t ${{ secrets.AZURE_IMAGE_TAG }} -r ${{ secrets.AZURE_IMAGE_REGISTRY }} .
+        env:
+          AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+          ATLAS_URI: ${{ secrets.ATLAS_URI }}
+          ATLAS_DB_NAME: ${{ secrets.ATLAS_DB_NAME }}
