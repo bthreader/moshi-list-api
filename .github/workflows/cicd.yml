@@ -51,11 +51,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Create .env file
+      - run: |
+          touch .env
+          echo AZ_CLIENT_ID=${{ secrets.AZ_CLIENT_ID }} >> .env
+          echo AZ_TENANT_ID=${{ secrets.AZ_TENANT_ID }} >> .env
+          echo ATLAS_URI=${{ secrets.ATLAS_URI }} >> .env
+          echo ATLAS_DB_NAME=${{ secrets.ATLAS_DB_NAME }} >> .env
+
       - name: Build image
         run: |
           az acr build -t ${{ secrets.AZ_IMAGE_TAG }} -r ${{ secrets.AZ_CONTAINER_REGISTRY }} .
-        env:
-          AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-          ATLAS_URI: ${{ secrets.ATLAS_URI }}
-          ATLAS_DB_NAME: ${{ secrets.ATLAS_DB_NAME }}
