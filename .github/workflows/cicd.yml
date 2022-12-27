@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
-
+ 
       - name: Test
         run: pytest test/
         env:
@@ -53,7 +53,7 @@ jobs:
 
       - name: Build image
         run: |
-          az acr build -t ${{ secrets.AZURE_IMAGE_TAG }} -r ${{ secrets.AZURE_IMAGE_REGISTRY }} .
+          az acr build -t ${{ secrets.AZ_IMAGE_TAG }} -r ${{ secrets.AZ_CONTAINER_REGISTRY }} .
         env:
           AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
           AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
