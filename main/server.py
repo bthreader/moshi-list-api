@@ -30,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 
+
 @app.on_event("startup")
 def startup_db_client():
     """Creates a database connection"""
