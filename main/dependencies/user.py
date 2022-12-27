@@ -70,12 +70,12 @@ def validate_key(token: str) -> Dict[str, str]:
         raise HTTPException(401, "Unable to decode token header") from exc
 
     # Get the JSON Web Key Set from MSFT for the tenant
-    jsonurl = urlopen(
+    with urlopen(
         "https://login.microsoftonline.com/"
         + config["TENANT_ID"]
         + "/discovery/v2.0/keys"
-    )
-    jwks = json.loads(jsonurl.read())
+    ) as jsonurl:
+        jwks = json.loads(jsonurl.read())
 
     # Iterate through the keys to see which one was used and save it
     rsa_key = {}
